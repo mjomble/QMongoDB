@@ -22,7 +22,7 @@ exports.db = function (dbName, host /*omit for default*/, port /*omit for defaul
 
     if (!dbPromise) {
         dbPromise = Q.fcall(function () {
-            var db = new Db(dbName, new Server(host || HOST, port || PORT, {}));
+            var db = new Db(dbName, new Server(host || HOST, port || PORT, {}), { w: 0 });
 
             return Q.ncall(db.open, db);
         });
