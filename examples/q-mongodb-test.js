@@ -1,16 +1,15 @@
-var Q = require('q'),
-    QMongoDB = require('./../q-mongodb');
+var QMongoDB = require('./../q-mongodb');
 
 function testDbCollection() {
     return QMongoDB.db('q-mobngodb-test').then(function (db) {
         return QMongoDB.collection(db, 'people');
     }).then(function (collection) {
-            return Q.ncall(collection.remove, collection).then(function () {
+            return collection.remove().then(function () {
                 return collection;
             });
         }).then(function (collection) {
             // We now have an empty collection.  Verify.
-            return Q.ncall(collection.count, collection).then(function (count) {
+            return collection.count().then(function (count) {
                 if (count != 0) {
                     throw new Error("Db not empty after remove call");
                 }
@@ -19,7 +18,7 @@ function testDbCollection() {
             });
         }).then(function (collection) {
             // Insert some data
-            return Q.ncall(collection.insert, collection, [
+            return collection.insert([
                 { name:"The Dude" },
                 { name:"Walter" },
                 { name:"Donny" }
@@ -28,9 +27,9 @@ function testDbCollection() {
                     return collection;
                 });
         }).then(function (collection) {
-            return Q.ncall(collection.find, collection);
+            return collection.find();
         }).then(function (cursor) {
-            return Q.ncall(cursor.toArray, cursor);
+            return cursor.toArray();
         }).then(function (items) {
             if (!items || items.length !== 3) {
                 throw new Error("Invalid items");
