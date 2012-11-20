@@ -5,12 +5,12 @@ function testDbCollection() {
     return QMongoDB.db('q-mobngodb-test').then(function (db) {
         return QMongoDB.collection(db, 'people');
     }).then(function (collection) {
-            return Q.ncall(collection.remove, collection).then(function () {
+            return collection.remove().then(function () {
                 return collection;
             });
         }).then(function (collection) {
             // We now have an empty collection.  Verify.
-            return Q.ncall(collection.count, collection).then(function (count) {
+            return collection.count().then(function (count) {
                 if (count != 0) {
                     throw new Error("Db not empty after remove call");
                 }
@@ -19,7 +19,7 @@ function testDbCollection() {
             });
         }).then(function (collection) {
             // Insert some data
-            return Q.ncall(collection.insert, collection, [
+            return collection.insert([
                 { name:"The Dude" },
                 { name:"Walter" },
                 { name:"Donny" }

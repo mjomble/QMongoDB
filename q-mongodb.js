@@ -4,7 +4,8 @@ var Q = require('q'),
     Server = require('mongodb').Server,
     HOST = process.env['MONGO_NODE_DRIVER_HOST'] || 'localhost',
     PORT = process.env['MONGO_NODE_DRIVER_PORT'] || Connection.DEFAULT_PORT,
-    _dbPromiseMap = {};
+    _dbPromiseMap = {},
+    collectionWrapper = require('./collection');
 
 /**
  * Returns a promise that resolves to an open DB.  Calling db(...) again with the same parameters at a later time (but
@@ -56,9 +57,10 @@ exports.collection = function (db, collectionName) {
         return Q.ncall(db.collection, db, collectionName);
     }).then(function (collection) {
             if (!collection) {
-                return Q.ncall(db.createCollection, db, collectionName);
+                return Q.ncall(db.createCollection, db, collectionName)
+                    .then(collectionWrapper);
             } else {
-                return collection;
+                return collectionWrapper(collection);
             }
         });
 }
