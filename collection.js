@@ -12,16 +12,46 @@ function Wrapper(collection) {
 
 Wrapper.prototype =
 { find: function() { return this.coll.find.apply(this.coll, arguments) }
-, findOne: wrap('findOne')
-, findAndModify: wrap('findAndModify')
-, count: wrap('count')
-, insert: wrap('insert')
-, remove: wrap('remove')
-, save: wrap('save')
+, findOne: function() { return this.coll.find.apply(this.coll, arguments) }
 }
 
+Object.defineProperty(Wrapper.prototype, 'hint',
+{ enumerable: true
+, get: function() { return this.coll.hint }
+, set: function(v) { this.coll.hint = v }
+})
+
+;['insert'
+, 'remove'
+, 'rename'
+, 'save'
+, 'update'
+, 'distinct'
+, 'count'
+, 'drop'
+, 'findAndModify'
+, 'findAndRemove'
+, 'createIndex'
+, 'ensureIndex'
+, 'indexInformation'
+, 'dropIndex'
+, 'dropAllIndexes'
+, 'dropIndexes'
+, 'reIndex'
+, 'mapReduce'
+, 'group'
+, 'options'
+, 'isCapped'
+, 'indexExists'
+, 'geoNear'
+, 'geoHaystackSearch'
+, 'indexes'
+, 'aggregate'
+, 'stats'
+].forEach(wrap)
+
 function wrap(method) {
-	return function wrapped() {
+	Wrapper.prototype[method] = function wrapped() {
 		var args = Array.prototype.slice.call(arguments)
 		args.unshift(this.coll, method)
 		return Q.ninvoke.apply(Q, args)
