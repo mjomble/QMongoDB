@@ -1,5 +1,4 @@
-var Q = require('q'),
-    QMongoDB = require('./../q-mongodb');
+var QMongoDB = require('./../q-mongodb');
 
 function testDbCollection() {
     return QMongoDB.db('q-mobngodb-test').then(function (db) {
@@ -28,9 +27,9 @@ function testDbCollection() {
                     return collection;
                 });
         }).then(function (collection) {
-            return Q.ncall(collection.find, collection);
+            return collection.find();
         }).then(function (cursor) {
-            return Q.ncall(cursor.toArray, cursor);
+            return cursor.toArray();
         }).then(function (items) {
             if (!items || items.length !== 3) {
                 throw new Error("Invalid items");

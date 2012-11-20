@@ -1,21 +1,21 @@
 module.exports = createWrapper
 
 var Q = require('q')
+  , cursor = require('./cursor')
 
 function createWrapper(collection) {
-	return new Wrapper(collection)
+	return new Collection(collection)
 }
 
-function Wrapper(collection) {
+function Collection(collection) {
 	this.coll = collection
 }
 
-Wrapper.prototype =
-{ find: function() { return this.coll.find.apply(this.coll, arguments) }
-, findOne: function() { return this.coll.find.apply(this.coll, arguments) }
-}
+[ 'find'
+, 'findOne'
+].forEach(wrapAndMakeCursor)
 
-Object.defineProperty(Wrapper.prototype, 'hint',
+Object.defineProperty(Collection.prototype, 'hint',
 { enumerable: true
 , get: function() { return this.coll.hint }
 , set: function(v) { this.coll.hint = v }
@@ -50,8 +50,16 @@ Object.defineProperty(Wrapper.prototype, 'hint',
 , 'stats'
 ].forEach(wrap)
 
+function wrapAndMakeCursor(method) {
+	Collection.prototype[method] = function () {
+		var args = Array.prototype.slice(arguments)
+		args.unshift(this.coll, method)
+		return Q.ninvoke.apply(Q, args).then(cursor)
+	}
+}
+
 function wrap(method) {
-	Wrapper.prototype[method] = function wrapped() {
+	Collection.prototype[method] = function wrapped() {
 		var args = Array.prototype.slice.call(arguments)
 		args.unshift(this.coll, method)
 		return Q.ninvoke.apply(Q, args)
