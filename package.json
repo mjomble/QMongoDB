@@ -20,11 +20,12 @@
         "MongoDB"
     ],
     "dependencies": {
-        "mongodb": "*",
-        "q" : "*"
+        "mongodb": "1.2.0",
+        "q" : "0.8.10"
     },
     "engines": {
-        "node": ">=0.6.0"
+        "node": "0.8.x",
+        "npm": "1.1.x"
     },
     "license": "MIT"
 }
