@@ -4,33 +4,27 @@ function testDbCollection() {
     return QMongoDB.db('q-mobngodb-test').then(function (db) {
         return QMongoDB.collection(db, 'people');
     }).then(function (collection) {
-            return collection.remove().then(function () {
-                return collection;
-            });
-        }).then(function (collection) {
+        function passCollection() { return collection }
+        return collection.remove().then(passCollection)
             // We now have an empty collection.  Verify.
-            return collection.count().then(function (count) {
+            .invoke('count').then(function (count) {
                 if (count != 0) {
                     throw new Error("Db not empty after remove call");
                 }
 
                 return collection;
-            });
-        }).then(function (collection) {
-            // Insert some data
-            return collection.insert([
+            })
+        // Insert some data
+        .invoke('insert', [
                 { name:"The Dude" },
                 { name:"Walter" },
                 { name:"Donny" }
             ])
-                .then(function () {
-                    return collection;
-                });
-        }).then(function (collection) {
-            return collection.find();
-        }).then(function (cursor) {
-            return cursor.toArray();
-        }).then(function (items) {
+            .then(passCollection)
+        .invoke('find')
+        // passes a Cursor
+        .invoke('toArray')
+        .then(function (items) {
             if (!items || items.length !== 3) {
                 throw new Error("Invalid items");
             }
@@ -41,6 +35,7 @@ function testDbCollection() {
             console.log("testDbCollection Error:");
             console.dir(err);
         });
+    })
 }
 
 function testPassingDbPromiseInsteadOfDb() {
