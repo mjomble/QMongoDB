@@ -1,19 +1,19 @@
 module.exports = createWrapper
 
 var Q = require('q')
-  , cursor = require('./cursor')
+  , wrappers = require('./wrappers')
 
 function createWrapper(collection) {
 	return new Collection(collection)
 }
 
 function Collection(collection) {
-	this.coll = collection
+	this.wrapped = this.coll = collection
 }
 
 [ 'find'
 , 'findOne'
-].forEach(wrapAndMakeCursor)
+].forEach(wrappers.wrapAndMakeCursor, Collection.prototype)
 
 Object.defineProperty(Collection.prototype, 'hint',
 { enumerable: true
@@ -48,20 +48,4 @@ Object.defineProperty(Collection.prototype, 'hint',
 , 'indexes'
 , 'aggregate'
 , 'stats'
-].forEach(wrap)
-
-function wrapAndMakeCursor(method) {
-	Collection.prototype[method] = function () {
-		var args = Array.prototype.slice(arguments)
-		args.unshift(this.coll, method)
-		return Q.ninvoke.apply(Q, args).then(cursor)
-	}
-}
-
-function wrap(method) {
-	Collection.prototype[method] = function wrapped() {
-		var args = Array.prototype.slice.call(arguments)
-		args.unshift(this.coll, method)
-		return Q.ninvoke.apply(Q, args)
-	}
-}
+].forEach(wrappers.wrap, Collection.prototype)

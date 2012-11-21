@@ -1,19 +1,26 @@
 module.exports = wrapCursor
 
 var Q = require('q')
+  , wrappers = require('./wrappers')
 
 function wrapCursor(cursor) {
 	return new Cursor(cursor)
 }
 
 function Cursor(cursor) {
-	this.cursor = cursor
+	this.wrapped = this.cursor = cursor
 }
 
-// formattedOrderClause formatSortValue streamRecords stream isClosed rewind
+;[ 'each'
+, 'formattedOrderClause'
+, 'formatSortValue'
+, 'streamRecords'
+, 'stream'
+, 'isClosed'
+, 'rewind'
+].forEach(wrappers.wrapAndCallThrough, Cursor.prototype)
 
 ;[ 'toArray'
-, 'each'
 , 'count'
 , 'sort'
 , 'limit'
@@ -23,10 +30,4 @@ function Cursor(cursor) {
 , 'nextObject'
 , 'explain'
 , 'close'
-].forEach(function(method) {
-	Cursor.prototype[method] = function wrapped() {
-		var args = Array.prototype.slice.call(arguments)
-		args.unshift(this.cursor, method)
-		return Q.ninvoke.apply(Q, args)
-	}
-})
+].forEach(wrappers.wrap, Cursor.prototype)
