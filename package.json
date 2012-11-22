@@ -1,6 +1,6 @@
 {
     "name": "q-mongodb",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "author" : "Brian Hein <brian@cannedcoding.com>",
     "description" : "Q (promises) wrapper for the mongodb node.js package",
     "contributors" : [
