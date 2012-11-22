@@ -3,9 +3,11 @@ describe('integration/cursor.js', function() {
 	  , collection
 	beforeEach(function() {
 		return mongo.db('q-mongodb-test').invoke('collection', 'test')
-			.then(setCollection)
+			.then(function(coll) {
+				collection = coll
+				return coll
+			})
 			.invoke('remove')
-			.then(passCollection)
 			.invoke('insert',
 				[ { a: 1 }
 				, { a: 2 }
@@ -44,12 +46,4 @@ describe('integration/cursor.js', function() {
 			})
 		})
 	})
-
-	function setCollection(coll) {
-		collection = coll
-		return coll
-	}
-	function passCollection() {
-		return collection
-	}
 })

@@ -4,8 +4,7 @@ function testDbCollection() {
     return QMongoDB.db('q-mobngodb-test')
     .invoke('collection', 'people')
     .then(function (collection) {
-        function passCollection() { return collection }
-        return collection.remove().then(passCollection)
+        return collection.remove()
             // We now have an empty collection.  Verify.
             .invoke('count').then(function (count) {
                 if (count != 0) {
@@ -20,7 +19,7 @@ function testDbCollection() {
                 { name:"Walter" },
                 { name:"Donny" }
             ])
-            .then(passCollection)
+        .then(function() { return collection })
         .invoke('find')
         // passes a Cursor
         .invoke('toArray')
