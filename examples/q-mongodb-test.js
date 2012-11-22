@@ -1,9 +1,9 @@
 var QMongoDB = require('./../q-mongodb');
 
 function testDbCollection() {
-    return QMongoDB.db('q-mobngodb-test').then(function (db) {
-        return QMongoDB.collection(db, 'people');
-    }).then(function (collection) {
+    return QMongoDB.db('q-mobngodb-test')
+    .invoke('collection', 'people')
+    .then(function (collection) {
         function passCollection() { return collection }
         return collection.remove().then(passCollection)
             // We now have an empty collection.  Verify.
@@ -24,6 +24,7 @@ function testDbCollection() {
         .invoke('find')
         // passes a Cursor
         .invoke('toArray')
+    })
         .then(function (items) {
             if (!items || items.length !== 3) {
                 throw new Error("Invalid items");
@@ -35,7 +36,6 @@ function testDbCollection() {
             console.log("testDbCollection Error:");
             console.dir(err);
         });
-    })
 }
 
 function testPassingDbPromiseInsteadOfDb() {

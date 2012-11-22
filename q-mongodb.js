@@ -5,6 +5,7 @@ var Q = require('q'),
     HOST = process.env['MONGO_NODE_DRIVER_HOST'] || 'localhost',
     PORT = process.env['MONGO_NODE_DRIVER_PORT'] || Connection.DEFAULT_PORT,
     _dbPromiseMap = {},
+    dbWrapper = require('./Db'),
     collectionWrapper = require('./collection');
 
 /**
@@ -25,7 +26,9 @@ exports.db = function (dbName, host /*omit for default*/, port /*omit for defaul
         dbPromise = Q.fcall(function () {
             var db = new Db(dbName, new Server(host || HOST, port || PORT, {}), { w: 0 });
 
-            return Q.ncall(db.open, db);
+            return Q.ncall(db.open, db).then(function() {
+                return dbWrapper(db)
+            });
         });
 
         _dbPromiseMap[dbKey] = dbPromise;
