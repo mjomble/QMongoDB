@@ -12,7 +12,6 @@ function Collection(collection) {
 }
 
 [ 'find'
-, 'findOne'
 ].forEach(wrappers.wrapAndMakeCursor, Collection.prototype)
 
 Object.defineProperty(Collection.prototype, 'hint',
@@ -29,6 +28,7 @@ Object.defineProperty(Collection.prototype, 'hint',
 , 'distinct'
 , 'count'
 , 'drop'
+, 'findOne'
 , 'findAndModify'
 , 'findAndRemove'
 , 'createIndex'
