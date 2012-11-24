@@ -37,6 +37,19 @@ exports.db = function (dbName, host /*omit for default*/, port /*omit for defaul
     return dbPromise;
 };
 
+exports.connect = function(url, options) {
+	var dbPromise = _dbPromiseMap[url]
+	if(dbPromise) {
+		return dbPromise
+	}
+	dbPromise = Q.ninvoke(Db, 'connect', url, options)
+		.then(function(db) {
+			return dbWrapper(db)
+		})
+	_dbPromiseMap[url] = dbPromise
+	return dbPromise
+}
+
 /**
  * Returns a promise that resolves to a collection.  A new collection will be created in the db if one does not exist.
  *
