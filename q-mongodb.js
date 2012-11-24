@@ -5,7 +5,7 @@ var Q = require('q'),
     HOST = process.env['MONGO_NODE_DRIVER_HOST'] || 'localhost',
     PORT = process.env['MONGO_NODE_DRIVER_PORT'] || Connection.DEFAULT_PORT,
     _dbPromiseMap = {},
-    dbWrapper = require('./Db'),
+    dbWrapper = require('./db'),
     collectionWrapper = require('./collection');
 
 /**
