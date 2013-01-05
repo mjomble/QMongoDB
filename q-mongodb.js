@@ -26,7 +26,7 @@ exports.db = function (dbName, host /*omit for default*/, port /*omit for defaul
         dbPromise = Q.fcall(function () {
             var db = new Db(dbName, new Server(host || HOST, port || PORT, {}), { w: 0 });
 
-            return Q.ncall(db.open, db).then(function() {
+            return Q.ninvoke(db, 'open').then(function() {
                 return dbWrapper(db)
             });
         });
@@ -70,10 +70,10 @@ exports.collection = function (db, collectionName) {
     }
 
     return dbPromise.then(function (db) {
-        return Q.ncall(db.collection, db, collectionName);
+        return Q.ninvoke(db, 'collection', collectionName);
     }).then(function (collection) {
             if (!collection) {
-                return Q.ncall(db.createCollection, db, collectionName)
+                return Q.ninvoke(db, 'createCollection', collectionName)
                     .then(collectionWrapper);
             } else {
                 return collectionWrapper(collection);
@@ -95,7 +95,7 @@ exports.closeAll = function () {
                 delete _dbPromiseMap[key];
 
                 return dbPromise.then(function (db) {
-                    return Q.ncall(db.close, db);
+                    return Q.ninvoke(db, 'close');
                 }).then(function () {
                         // Call close all again to move onto next dbPromise
                         return exports.closeAll();
